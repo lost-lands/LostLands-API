@@ -1,0 +1,13 @@
+# Third party libraries
+/vendor/
+
+# Editor files
+/.idea/
+
+# Application specific config
+env.php
+
+# PHPUnit
+.phpunit.result.cache
+.phpunit.cache
+/build
