@@ -10,7 +10,6 @@ $settings = [];
 $settings['path']       = require __DIR__ . '/path.php';
 $settings['error']      = require __DIR__ . '/error.php';
 $settings['logger']     = require __DIR__ . '/logger.php';
-$settings['twig']       = require __DIR__ . '/twig.php';
 $settings['session']    = require __DIR__ . '/session.php';
 
 // Return array to container.
