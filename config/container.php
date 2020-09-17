@@ -1,10 +1,15 @@
 <?php declare(strict_types=1);
 
+use App\Foundation\Error\Renderers\HtmlErrorRenderer;
+use App\Foundation\Error\Renderers\JsonErrorRenderer;
+use App\Foundation\Error\Renderers\PlainTextErrorRenderer;
+use App\Foundation\Error\Renderers\XmlErrorRenderer;
 use App\Foundation\Factory\LoggerFactory;
 use Doctrine\DBAL\Configuration as DoctrineConfiguration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Selective\BasePath\BasePathMiddleware;
 use Slim\App;
 use Slim\Factory\AppFactory;
@@ -28,6 +33,10 @@ $objects[App::class] = function (ContainerInterface $container) {
 };
 
 // Error middleware
+$objects[ResponseFactoryInterface::class] = function (ContainerInterface $container) {
+    return $container->get(App::class)->getResponseFactory();
+};
+
 $objects[ErrorMiddleware::class] = function (ContainerInterface $container) {
 
     // Configure error handler
@@ -38,7 +47,8 @@ $objects[ErrorMiddleware::class] = function (ContainerInterface $container) {
     $loggerFactory  = $container->get(LoggerFactory::class);
     $logger         = $loggerFactory->addFileHandler('error.log')->createInstance('error');
 
-    return new ErrorMiddleware(
+    // Configure the error handler
+    $errorMiddleware = new ErrorMiddleware(
         $app->getCallableResolver(),
         $app->getResponseFactory(),
         (bool)$settings['display_error_details'],
@@ -46,6 +56,16 @@ $objects[ErrorMiddleware::class] = function (ContainerInterface $container) {
         (bool)$settings['log_error_details'],
         $logger
     );
+
+    $errorHandler = $errorMiddleware->getDefaultErrorHandler();
+    $errorHandler->registerErrorRenderer('text/html', HtmlErrorRenderer::class);
+    $errorHandler->registerErrorRenderer('application/json', JsonErrorRenderer::class);
+    $errorHandler->registerErrorRenderer('text/plain', PlainTextErrorRenderer::class);
+    $errorHandler->registerErrorRenderer('application/xml', XmlErrorRenderer::class);
+    $errorHandler->registerErrorRenderer('text/xml', XmlErrorRenderer::class);
+    $errorHandler->forceContentType('application/json');
+
+    return $errorMiddleware;
 };
 
 // Detect base path

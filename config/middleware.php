@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+use App\Foundation\Middleware\ErrorHandlerMiddleware;
+use App\Foundation\Middleware\HttpExceptionMiddleware;
 use App\Foundation\Middleware\SessionMiddleware;
 use Selective\BasePath\BasePathMiddleware;
 use Slim\App;
@@ -18,6 +20,8 @@ return function (App $app) {
     $app->addRoutingMiddleware();           // Built-in Slim router.
 
     // Error Handling
-    $app->add(ErrorMiddleware::class);      // Catch exceptions and errors.
+    $app->add(HttpExceptionMiddleware::class);  // Catch HTTP errors.
+    $app->add(ErrorHandlerMiddleware::class);   // Catch PHP errors.
+    $app->add(ErrorMiddleware::class);          // Catch exceptions and errors.
 
 };

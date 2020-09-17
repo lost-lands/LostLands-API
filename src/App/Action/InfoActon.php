@@ -18,7 +18,7 @@ class InfoActon extends ApiAction
             'author'        => 'CounterSanity',
             'copyright'     => 'Copyright 2020 Lost Lands Anarchy',
             'website'       => 'https://www.lostlands.co',
-            'discord'       => 'https://invite.gg/lostlands',
+            'discord'       => 'https://invite.gg/lostlands'
             'documentation' => 'https://developer.lostlands.co/',
         ];
 
